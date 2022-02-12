@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BillProgressBar">
+        <attr name="logoHeight" format="integer" />
+        <attr name="logoWidth" format="integer" />
+        <attr name="wheelDim" format="integer" />
+    </declare-styleable>
+</resources>
