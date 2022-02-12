@@ -120,8 +120,8 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
         if (animation.equals(stopAnimator)) {
             wheelCenterX += animate;
             logoCenterX += animate;
-            if(value == 180){
-                Toast.makeText(getContext(), "stop..", Toast.LENGTH_SHORT).show();
+            if (value == 180) {
+                this.setVisibility(GONE);
             }
         } else {
             Matrix matrix = new Matrix();
