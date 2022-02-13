@@ -9,10 +9,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.Toast;
 
 public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdateListener {
 
@@ -22,13 +20,15 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
 
     private int wheelDim;
 
-    private Paint progressPaint;
-    private Bitmap logo, wheel1, wheel2;
+    private Paint progressPaint,smokePaint;
+    private Bitmap logo, wheel1, wheel2, smoke, bigSmoke;
     private Resources res;
     private ValueAnimator mAnimator, stopAnimator;
 
     private int wheelCenterX, wheelCenterY, oldWheelCenterX;
     private int logoCenterX, logoCenterY;
+    private int bigSmokeCenterX, bigSmokeCenterY, smallSmokeCenterX, smallSmokeCenterY;
+    private boolean isStopping = false, isBigSmoke = true;
 
     public float getLogoHeight() {
         return logoHeight;
@@ -65,7 +65,10 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
 
     private void init(AttributeSet attrs) {
         progressPaint = new Paint();
+        smokePaint = new Paint();
         progressPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        smokePaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        smokePaint.setAlpha(80);
         res = getResources();
 
         TypedArray typedArray = getContext().getTheme()
@@ -85,21 +88,21 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
         }
         logo = BitmapFactory.decodeResource(res, R.drawable.logo2);
         wheel1 = BitmapFactory.decodeResource(res, R.drawable.animate_wheel);
+        bigSmoke = BitmapFactory.decodeResource(res, R.drawable.small_smoke);
+        smoke = BitmapFactory.decodeResource(res, R.drawable.small_smoke);
         wheel2 = BitmapFactory.decodeResource(res, R.drawable.animate_wheel);
         logo = Bitmap.createScaledBitmap(logo, logoWidth, logoHeight, true);
         wheel1 = Bitmap.createScaledBitmap(wheel1, wheelDim, wheelDim, true);
         wheel2 = Bitmap.createScaledBitmap(wheel2, wheelDim, wheelDim, true);
+        bigSmoke = Bitmap.createScaledBitmap(bigSmoke, wheelDim * 2, wheelDim * 2, true);
+        smoke = Bitmap.createScaledBitmap(smoke, wheelDim, wheelDim, true);
 
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        logoCenterX = (getWidth() - logo.getWidth()) / 2;
-        logoCenterY = (getHeight() - logo.getHeight()) / 2;
-        wheelCenterX = logoCenterX + wheelDim;
-        oldWheelCenterX = logoCenterX + wheelDim;
-        wheelCenterY = (int) (logoCenterY + wheelDim * 2.70);
+        initValues();
     }
 
     @Override
@@ -109,8 +112,30 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
         canvas.drawBitmap(logo, logoCenterX, logoCenterY, progressPaint);
         canvas.drawBitmap(wheel1, wheelCenterX, wheelCenterY, progressPaint);
         canvas.drawBitmap(wheel2, dis, wheelCenterY, progressPaint);
+        if (isStopping)
+            if (isBigSmoke)
+                canvas.drawBitmap(bigSmoke, bigSmokeCenterX, bigSmokeCenterY, smokePaint);
+            else canvas.drawBitmap(smoke, smallSmokeCenterX, smallSmokeCenterY, smokePaint);
 
 
+    }
+
+    private void initValues() {
+
+        logoCenterX = (getWidth() - logo.getWidth()) / 2;
+        logoCenterY = (getHeight() - logo.getHeight()) / 2;
+
+        wheelCenterX = logoCenterX + wheelDim;
+        oldWheelCenterX = logoCenterX + wheelDim;
+        wheelCenterY = (int) (logoCenterY + wheelDim * 2.70);
+
+        bigSmokeCenterY = (int) ((logoCenterY + wheelCenterY) / 2.05);
+        bigSmokeCenterX = logoCenterX - (wheelCenterX / 6);
+
+        smallSmokeCenterX = logoCenterX;
+        smallSmokeCenterY = (int) ((logoCenterY + wheelCenterY) / 1.92);
+        isStopping = false;
+        isBigSmoke = true;
     }
 
     @Override
@@ -120,6 +145,11 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
         if (animation.equals(stopAnimator)) {
             wheelCenterX += animate;
             logoCenterX += animate;
+            bigSmokeCenterX += animate;
+            smallSmokeCenterX += animate;
+            isStopping = true;
+            if (animate % 7 == 0)
+                isBigSmoke = !isBigSmoke;
             if (value == 180) {
                 this.setVisibility(GONE);
             }
@@ -134,7 +164,8 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
     }
 
     public void startAnimation() {
-        wheelCenterX = oldWheelCenterX;
+        this.setVisibility(VISIBLE);
+        initValues();
         mAnimator = ValueAnimator.ofInt(4, 180);
         mAnimator.setDuration(1000);
         mAnimator.setRepeatCount(ValueAnimator.INFINITE);

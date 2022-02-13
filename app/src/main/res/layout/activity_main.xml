@@ -17,4 +17,14 @@
         app:logoHeight="360"
         app:logoWidth="360"
         app:wheelDim="96" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Animate"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias=".87"
+        android:onClick="animate"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
