@@ -7,24 +7,26 @@ import android.os.Handler;
 import android.view.View;
 
 import com.inferno.mobile.billprogressbarlib.BillProgressBar;
+import com.inferno.mobile.billprogressbarlib.ReverseBillProgressBar;
 
 public class MainActivity extends AppCompatActivity {
-    private BillProgressBar bill;
+    private ReverseBillProgressBar bill;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bill = findViewById(R.id.bill);
-        bill.startAnimation();
-        new Handler().postDelayed(() -> runOnUiThread(bill::stopAnimation), 3000);
+        // bill.startAnimation();
+        // new Handler().postDelayed(() -> runOnUiThread(bill::stopAnimation), 3000);
 
 
     }
 
     public void animate(View view) {
-        bill.startAnimation();
-        new Handler().postDelayed(() -> runOnUiThread(bill::stopAnimation), 3000);
+        bill.startAnimation(ReverseBillProgressBar.SLOW);
+        new Handler().postDelayed(() -> runOnUiThread(bill::stopAnimation),
+                ReverseBillProgressBar.SLOW);
 
     }
 }

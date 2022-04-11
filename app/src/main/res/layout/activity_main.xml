@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.inferno.mobile.billprogressbarlib.BillProgressBar
+    <com.inferno.mobile.billprogressbarlib.ReverseBillProgressBar
         android:id="@+id/bill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,9 +14,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:logoHeight="360"
-        app:logoWidth="360"
-        app:wheelDim="96" />
+        app:logoHeight="480"
+        app:logoWidth="480"
+        app:wheelDim="128" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

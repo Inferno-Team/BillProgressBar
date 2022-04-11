@@ -14,21 +14,29 @@ import android.view.View;
 
 public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdateListener {
 
-    private int logoHeight;
+    public static long SLOW = 2000;
+    public static long NORMAL = 1000;
+    public static long FAST = 500;
 
-    private int logoWidth;
+    protected boolean isRunning = false;
+    protected int logoHeight;
 
-    private int wheelDim;
+    protected int logoWidth;
 
-    private Paint progressPaint,smokePaint;
-    private Bitmap logo, wheel1, wheel2, smoke, bigSmoke;
-    private Resources res;
-    private ValueAnimator mAnimator, stopAnimator;
+    protected int wheelDim;
 
-    private int wheelCenterX, wheelCenterY, oldWheelCenterX;
-    private int logoCenterX, logoCenterY;
-    private int bigSmokeCenterX, bigSmokeCenterY, smallSmokeCenterX, smallSmokeCenterY;
-    private boolean isStopping = false, isBigSmoke = true;
+    protected long delay;
+
+    protected Paint progressPaint, smokePaint;
+    protected Bitmap logo, wheel1, wheel2, smoke, bigSmoke;
+    protected Resources res;
+    protected ValueAnimator mAnimator, stopAnimator;
+
+    protected int wheelCenterX, wheelCenterY, oldWheelCenterX;
+    protected int logoCenterX, logoCenterY;
+    protected int bigSmokeCenterX, bigSmokeCenterY, smallSmokeCenterX, smallSmokeCenterY;
+    protected boolean isStopping = false, isBigSmoke = true;
+
 
     public float getLogoHeight() {
         return logoHeight;
@@ -63,7 +71,8 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
         init(attrs);
     }
 
-    private void init(AttributeSet attrs) {
+    protected void init(AttributeSet attrs) {
+        this.delay = NORMAL;
         progressPaint = new Paint();
         smokePaint = new Paint();
         progressPaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -120,7 +129,7 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
 
     }
 
-    private void initValues() {
+    protected void initValues() {
 
         logoCenterX = (getWidth() - logo.getWidth()) / 2;
         logoCenterY = (getHeight() - logo.getHeight()) / 2;
@@ -142,6 +151,7 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
     public void onAnimationUpdate(ValueAnimator animation) {
         int value = (int) animation.getAnimatedValue();
         int animate = value / 4;
+
         if (animation.equals(stopAnimator)) {
             wheelCenterX += animate;
             logoCenterX += animate;
@@ -150,8 +160,9 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
             isStopping = true;
             if (animate % 7 == 0)
                 isBigSmoke = !isBigSmoke;
-            if (value == 180) {
+            if (value == 280) {
                 this.setVisibility(GONE);
+                isRunning = false;
             }
         } else {
             Matrix matrix = new Matrix();
@@ -164,20 +175,27 @@ public class BillProgressBar extends View implements ValueAnimator.AnimatorUpdat
     }
 
     public void startAnimation() {
+        startAnimation(delay);
+    }
+
+    public void startAnimation(long delay) {
+        System.out.println(isRunning);
+        if(isRunning)return;
         this.setVisibility(VISIBLE);
+        isRunning=true;
         initValues();
-        mAnimator = ValueAnimator.ofInt(4, 180);
-        mAnimator.setDuration(1000);
-        mAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        mAnimator.setRepeatMode(ValueAnimator.RESTART);
+        mAnimator = ValueAnimator.ofInt(4, 280);
+        mAnimator.setDuration(delay);
+//        mAnimator.setRepeatCount(ValueAnimator.INFINITE);
+//        mAnimator.setRepeatMode(ValueAnimator.RESTART);
         mAnimator.addUpdateListener(this);
         mAnimator.start();
     }
 
     public void stopAnimation() {
         wheelCenterX = oldWheelCenterX;
-        stopAnimator = ValueAnimator.ofInt(4, 180);
-        stopAnimator.setDuration(1000);
+        stopAnimator = ValueAnimator.ofInt(4, 280);
+        stopAnimator.setDuration(delay);
         stopAnimator.addUpdateListener(this);
         stopAnimator.start();
     }
